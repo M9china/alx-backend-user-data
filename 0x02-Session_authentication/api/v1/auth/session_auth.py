@@ -1,6 +1,41 @@
 #!/usr/bin/env python3
 """Session Authentication Class"""
+import os
+from flask import Blueprint, jsonify, make_response, request
 from api.v1.auth.auth import Auth
+
+
+# Create a new blueprint for session authentication
+session_auth = Blueprint('session_auth', __name__,
+                         url_prefix='/api/v1/auth_session')
+
+
+@session_auth.route('/login', methods=['POST'], strict_slashes=False)
+def login():
+    """Login route"""
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    if email is None:
+        return make_response(jsonify({"error": "email missing"}), 400)
+    if password is None:
+        return make_response(jsonify({"error": "password missing"}), 400)
+
+    from models.user import User
+    user = User.search({'email': email})
+    if not user:
+        return make_response(jsonify(
+            {"error": "no user found for this email"}), 404)
+
+    if user is None or not user.is_valid_password(password):
+        return make_response(jsonify({"error": "wrong password"}), 401)
+
+    session_id = Auth().create_session(user.id)
+    if session_id is None:
+        return make_response(jsonify({"error": "error creating session"}), 500)
+    response = make_response(jsonify(user.to_json()))
+    response.set_cookie(os.getenv('SESSION_NAME'), session_id)
+    return response
 
 
 class SessionAuth(Auth):
