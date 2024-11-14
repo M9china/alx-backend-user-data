@@ -3,7 +3,6 @@
 import os
 from flask import Blueprint, jsonify, make_response, request
 from models.user import User
-from api.v1.auth.auth import Auth
 
 # Create a new blueprint for session authentication
 session_auth = Blueprint('session_auth', __name__,
