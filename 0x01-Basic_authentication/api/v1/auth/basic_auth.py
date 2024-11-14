@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """A class that inherits from Auth"""
 
+from typing import TypeVar
 from api.v1.auth.auth import Auth
 from models.user import User
 
