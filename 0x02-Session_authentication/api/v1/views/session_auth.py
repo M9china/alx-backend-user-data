@@ -42,3 +42,12 @@ def login():
     response = make_response(jsonify(user.to_json()))
     response.set_cookie(os.getenv('SESSION_NAME'), session_id)
     return response
+
+
+@session_auth.route('/logout', methods=['DELETE'], strict_slashes=False)
+def logout():
+    """Logout route for session authentication"""
+    from api.v1.app import auth
+    if not auth.destroy_session(request):
+        return False, 404
+    return make_response(jsonify({}), 200)
