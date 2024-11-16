@@ -35,7 +35,7 @@ def before_request() -> Optional[str]:
         if auth.require_auth(request.path, allowed_path):
             if not auth.authorization_header(request) and \
                not auth.session_cookie(request):
-                abort(401)               
+                abort(401)          
 
 
 @app.errorhandler(404)
