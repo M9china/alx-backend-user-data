@@ -28,14 +28,15 @@ if auth_type == 'basic_auth':
 def before_request() -> Optional[str]:
     """ filter each request
     """
-    if auth:
-        allowed_path = ['/api/v1/status/',
-                        '/api/v1/unauthorized/', '/api/v1/forbidden/',
-                        '/api/v1/auth_session/login/']
-        if auth.require_auth(request.path, allowed_path):
-            if auth.authorization_header(request) is None and \
-               auth.session_cookie(request) is None:
-                abort(401)
+    if auth is None:
+        return
+    excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
+                      '/api/v1/forbidden/', '/api/v1/auth_session/login/']
+    if not auth.require_auth(request.path, excluded_paths):
+        return
+    if auth.authorization_header(request) is None and \
+            not auth.session_cookie(request):
+        abort(401)
 
 
 @app.errorhandler(404)
