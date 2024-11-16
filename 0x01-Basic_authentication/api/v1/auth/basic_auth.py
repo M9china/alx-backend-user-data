@@ -53,10 +53,9 @@ class BasicAuth(Auth):
                 user_pwd is None or not isinstance(user_pwd, str):
             return None
         try:
-            user = User()
-            user.email = user_email
-            user.password = user_pwd
-            return user
+            user = User.fint_by(email=user_email)
+            if user and user.is_valid_password(user_pwd):
+                return user
         except Exception:
             return None
 
