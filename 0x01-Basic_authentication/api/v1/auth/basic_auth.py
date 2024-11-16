@@ -56,6 +56,7 @@ class BasicAuth(Auth):
             user = User.fint_by(email=user_email)
             if user and user.is_valid_password(user_pwd):
                 return user
+            return None
         except Exception:
             return None
 
