@@ -9,46 +9,38 @@ session_auth = Blueprint('session_auth', __name__,
                          url_prefix='/api/v1/auth_session')
 
 
-@app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
+@session_auth.route('/login', methods=['POST'], strict_slashes=False)
 def login():
-    """Handles user login with session authentication."""
+    """Login route for session authentication"""
     email = request.form.get('email')
     password = request.form.get('password')
 
-    # Check if email is missing or empty
+    # Check for missing email or password
     if not email:
-        return jsonify({"error": "email missing"}), 400
-
-    # Check if password is missing or empty
+        return make_response(jsonify({"error": "email missing"}), 400)
     if not password:
-        return jsonify({"error": "password missing"}), 400
+        return make_response(jsonify({"error": "password missing"}), 400)
 
-    # Search for the user by email
-    try:
-        users = User.search({"email": email})
-    except Exception:
-        return jsonify({"error": "no user found for this email"}), 404
+    # Retrieve User instance by email
+    user = User.search({'email': email})
+    if not user:
+        return make_response(jsonify(
+            {"error": "no user found for this email"}), 404)
 
-    # If no user is found
-    if not users or len(users) == 0:
-        return jsonify({"error": "no user found for this email"}), 404
-
-    user = users[0]
-
-    # Validate password
+    # Verify password
+    user = user[0]  # Assuming search returns a list
     if not user.is_valid_password(password):
-        return jsonify({"error": "wrong password"}), 401
+        return make_response(jsonify({"error": "wrong password"}), 401)
 
-    # Import auth to avoid circular import issues
-    from api.v1.app import auth
-
-    # Create a session for the user
+    # Create session ID and set it in the response cookie
+    from api.v1.app import auth  # Import here to avoid circular import issues
     session_id = auth.create_session(user.id)
+    if not session_id:
+        return make_response(jsonify({"error": "error creating session"}), 500)
 
-    # Return the user representation and set the session cookie
-    response = jsonify(user.to_json())
-    cookie_name = os.getenv("SESSION_NAME")
-    response.set_cookie(cookie_name, session_id)
+    # Return user data with session cookie
+    response = make_response(jsonify(user.to_json()))
+    response.set_cookie(os.getenv('SESSION_NAME'), session_id)
     return response
 
 
