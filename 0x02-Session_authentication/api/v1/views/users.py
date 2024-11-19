@@ -14,4 +14,3 @@ def view_all_users() -> str:
     """
     all_users = [user.to_json() for user in User.all()]
     return jsonify(all_users)
-
