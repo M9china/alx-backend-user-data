@@ -18,4 +18,6 @@ def view_all_users() -> str:
     if not user:
         abort(403)
     all_users = [user.to_json() for user in User.all()]
+    if not all_users:
+        return jsonify({"users": []})
     return jsonify(all_users)
