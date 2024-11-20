@@ -1,8 +1,6 @@
 ## Learning objectives of this project:
 
- - How to implement a log in and log out button in a web application
- - How to encrypt a password
- - How to store authentication data in a user session
- - How to store information in a cookie
- - How to protect a password
-
+    - How to declare API routes in a Flask app
+    - How to get and set cookies
+    - How to retrieve request form data
+    - How to return various HTTP status codes
