@@ -22,13 +22,13 @@ def login():
         return make_response(jsonify({"error": "password missing"}), 400)
 
     # Retrieve User instance by email
-    user = User.search({'email': email})
-    if not user:
+    users = User.search({'email': email})
+    if not users:
         return make_response(jsonify(
             {"error": "no user found for this email"}), 404)
 
     # Verify password
-    user = user[0]  # Assuming search returns a list
+    user = users[0]  # Assuming search returns a list
     if not user.is_valid_password(password):
         return make_response(jsonify({"error": "wrong password"}), 401)
 
