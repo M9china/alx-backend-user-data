@@ -56,10 +56,15 @@ class DB:
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """update existing user"""
-        user = self.find_user_by(id=user_id)
+        try:
+            user = self.find_user_by(id=user_id)
 
-        for key, value in kwargs.items():
-            if not hasattr(user, key):
-                raise ValueError(f'{key} is not a valid attribute for user')
-            setattr(value, key, user)
-        self.__session.commit()
+            for key, value in kwargs.items():
+                if not hasattr(user, key):
+                    raise ValueError(
+                        f'{key} is not a valid attribute for user')
+                setattr(user, key, value)
+            self._session.commit()
+        except Exception as e:
+            self._session.rollback()
+            raise e
