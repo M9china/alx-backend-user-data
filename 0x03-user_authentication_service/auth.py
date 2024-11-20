@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """hash password module"""
+import uuid
 import bcrypt
 from db import DB
 from user import User
@@ -44,3 +45,7 @@ class Auth():
         except Exception:
             pass
         return False
+
+    def _generate_uuid(self) -> str:
+        """Generate a UUID"""
+        return str(uuid.uuid4())
