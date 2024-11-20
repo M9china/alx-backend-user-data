@@ -3,6 +3,7 @@
 import bcrypt
 from db import DB
 from user import User
+from sqlalchemy.exc import IntegrityError
 
 
 class Auth():
@@ -17,13 +18,16 @@ class Auth():
         password, which is a byte string."""
         return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-    def register_user(self, password: str, email: str) -> User:
+    def register_user(self, email: str, password: str) -> User:
         """Takes in password and email and returns user"""
+        existing_user = None
         try:
             existing_user = self._db.find_user_by(email=email)
-            if existing_user:
-                raise ValueError(f'User {email} already exists')
         except Exception:
-            hashed_password = self._hash_password(password)
-            user = self._db.add_user(email, hashed_password)
-            return user
+            pass
+        if existing_user:
+            raise ValueError(f'User {email} already exists')
+
+        hashed_password = self._hash_password(password)
+        new_user = self._db.add_user(email, hashed_password)
+        return new_user
