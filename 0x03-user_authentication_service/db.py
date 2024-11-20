@@ -42,7 +42,7 @@ class DB:
         return new_user
 
     def find_user_by(self, **kwargs) -> User:
-        """find user by arbitrary keyword arguments arguments"""
+        """find user by arbitrary keyword arguments"""
         if not kwargs:
             raise InvalidRequestError('No arguments for filtering.')
 
@@ -53,3 +53,13 @@ class DB:
             return user
         except AttributeError as e:
             raise InvalidRequestError('Invalid query arguments.') from e
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """update existing user"""
+        user = self.find_user_by(id=user_id)
+
+        for key, value in kwargs.items():
+            if not hasattr(user, key):
+                raise ValueError(f'{key} is not a valid attribute for user')
+            setattr(value, key, user)
+        self.__session.commit()
