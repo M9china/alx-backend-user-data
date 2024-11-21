@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Flask application module"""
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 import flask
 from auth import Auth
 
@@ -47,6 +47,16 @@ def login():
         if session_id:
             return jsonify({"email": email, "message": "logged in"}), 200
     return flask.abort(401)
+
+
+@app.route('/sessions', methods=['DELETE'])
+def logout():
+    """route to logout a user"""
+    session_id = request.cookies.get('session_id')
+    if session:
+        AUTH.destroy_session(session_id)
+        return flask.redirect('/')
+    return flask.abort(403)
 
 
 if __name__ == "__main__":
