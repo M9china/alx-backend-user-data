@@ -4,6 +4,7 @@ import uuid
 import bcrypt
 from db import DB
 from user import User
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class Auth():
@@ -48,3 +49,16 @@ class Auth():
     def _generate_uuid(self) -> str:
         """Generate a UUID"""
         return str(uuid.uuid4())
+
+    def create_session(self, email: str) -> str:
+        """Create a session"""
+        try:
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+                return None
+        except Exception:
+            raise ValueError('seesion not created')
+
+        session_id = self._generate_uuid()
+        self._db.update_user(user.id, session_id=session_id)
+        return session_id
