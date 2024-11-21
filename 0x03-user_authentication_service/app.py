@@ -2,6 +2,7 @@
 """Flask application module"""
 
 from flask import Flask, jsonify, request
+import flask
 from auth import Auth
 
 app = Flask(__name__)
@@ -30,6 +31,22 @@ def users():
         return jsonify({"email": email, "message": "user created"}), 200
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
+
+
+@app.route('/sessions', methods=['POST'])
+def login():
+    """route to login a user"""
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    if not email or not password:
+        return jsonify({"message": "email and password is required"}), 400
+
+    if AUTH.valid_login(email, password):
+        session_id = AUTH.create_session(email)
+        if session_id:
+            return jsonify({"email": email, "message": "logged in"}), 200
+    return flask.abort(401)
 
 
 if __name__ == "__main__":
