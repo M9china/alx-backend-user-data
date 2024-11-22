@@ -49,7 +49,7 @@ def login():
             response.set_cookie('session_id', session_id, path='/')
             return response, 200
 
-        flask.abort(401)
+    flask.abort(401)
 
 
 @app.route('/sessions', methods=['DELETE'])
