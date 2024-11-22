@@ -56,11 +56,12 @@ def login():
 def logout():
     """route to logout a user"""
     session_id = request.cookies.get('session_id')
-    user_session = AUTH.get_user_from_session_id(session_id)
-    if user_session:
-        return flask.abort(403)
-    AUTH.destroy_session(session_id)
-    return flask.redirect('/')
+    if session_id:
+        AUTH.destroy_session(session_id)
+        response = flask.redirect('/')
+        # response.delete_cookie('session_id')
+        return response
+    return flask.abort(403)
 
 
 @app.route('/profile', methods=['GET'])
