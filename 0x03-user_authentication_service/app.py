@@ -46,10 +46,10 @@ def login():
         session_id = AUTH.create_session(email)
         if session_id:
             response = jsonify({"email": email, "message": "logged in"})
-            response.set_cookie('session_id', session_id)
+            response.set_cookie('session_id', session_id, path='/')
             return response, 200
 
-    flask.abort(401)
+        flask.abort(401)
 
 
 @app.route('/sessions', methods=['DELETE'])

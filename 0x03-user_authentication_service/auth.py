@@ -9,7 +9,8 @@ from user import User
 def _hash_password(password: str) -> bytes:
     """Takes in a password string arguments and returns a salted, hashed
     password, which is a byte string."""
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return hashed
 
 
 def _generate_uuid() -> str:
@@ -55,7 +56,7 @@ class Auth():
         """Create a new session for a user"""
         try:
             user = self._db.find_user_by(email=email)
-            session_id = self._generate_uuid()
+            session_id = _generate_uuid()
             self._db.update_user(user.id, session_id=session_id)
             return session_id
         except Exception:
@@ -80,7 +81,7 @@ class Auth():
         """Get reset password token"""
         try:
             user = self._db.find_user_by(email=email)
-            reset_token = self._generate_uuid()
+            reset_token = _generate_uuid()
             self._db.update_user(user.id, reset_token=reset_token)
             return reset_token
         except Exception:
@@ -90,7 +91,7 @@ class Auth():
         """Update password"""
         try:
             user = self._db.find_user_by(reset_token=reset_token)
-            hashed_password = self._hash_password(password)
+            hashed_password = _hash_password(password)
             self._db.update_user(user.id, hashed_password=hashed_password)
             self._db.update_user(user.id, reset_token=None)
         except Exception:
