@@ -46,7 +46,8 @@ def login():
         session_id = AUTH.create_session(email)
         if session_id:
             response = jsonify({"email": email, "message": "logged in"})
-            response.set_cookie('session_id', session_id, path='/')
+            response.set_cookie(key='session_id', value=session_id,
+                                httponly=True, path='/')
             return response, 200
 
     flask.abort(401)
