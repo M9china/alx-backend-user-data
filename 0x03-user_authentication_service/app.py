@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Flask application module"""
 
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, make_response, redirect, request, session
 import flask
 from auth import Auth
 
@@ -58,9 +58,9 @@ def logout():
     session_id = request.cookies.get('session_id')
     if session_id:
         AUTH.destroy_session(session_id)
-        response = flask.redirect('/')
+        response = make_response(redirect('/'))
         # response.delete_cookie('session_id')
-        return response
+        return response, 302
     return flask.abort(403)
 
 
