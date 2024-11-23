@@ -59,7 +59,7 @@ def logout():
     if session_id:
         AUTH.destroy_session(session_id)
         response = make_response(redirect('/'))
-        # response.delete_cookie('session_id')
+        response.delete_cookie('session_id')
         return response, 302
     return flask.abort(403)
 
